@@ -626,7 +626,9 @@ def get_proxy(agentConfig, use_system_settings=False):
     return None
 
 
-def get_confd_path(osname):
+def get_confd_path(osname=None):
+    if not osname:
+        osname = get_os()
     bad_path = ''
     if osname == 'windows':
         try:
@@ -650,7 +652,9 @@ def get_confd_path(osname):
     raise PathNotFound(bad_path)
 
 
-def get_checksd_path(osname):
+def get_checksd_path(osname=None):
+    if not osname:
+        osname = get_os()
     if osname == 'windows':
         return _windows_checksd_path()
     else:
