@@ -158,10 +158,23 @@ class Daemon(object):
         pid = self.pid()
 
         if pid:
-            message = "pidfile %s already exists. Is it already running?\n"
-            log.error(message % self.pidfile)
-            sys.stderr.write(message % self.pidfile)
-            sys.exit(1)
+            # Check if the pid in the pidfile corresponds to a running process
+            try:
+                os.kill(pid, 0)
+            except OSError, e:
+                if e.errno != errno.EPERM:
+                    log.warn('pidfile contains the pid of a not running process.'\
+                              ' Starting normally')
+                    exit_code = None
+                else:
+                    log.error('You do not have sufficient permissions')
+                    exit_code = 1
+            else:
+                log.error("Not starting, another instance is already running"
+                          " (using pidfile {0})".format(self.pidfile))
+                exit_code = 1
+            if exit_code:
+                sys.exit(exit_code)
 
         log.info("Pidfile: %s" % self.pidfile)
         if not foreground:
