@@ -596,6 +596,10 @@ class Platform(object):
         name = name or sys.platform
         return name == "win32"
 
+    @staticmethod
+    def is_windows(name=None):
+        return Platform.is_win32(name)
+
 """
 Iterable Recipes
 """
